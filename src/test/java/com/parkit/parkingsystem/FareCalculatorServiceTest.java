@@ -1,5 +1,6 @@
 package com.parkit.parkingsystem;
 
+import com.parkit.parkingsystem.constants.DiscountRate;
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
@@ -186,4 +187,68 @@ public class FareCalculatorServiceTest {
         assertEquals((0.5 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice() );
     }    
 
+    
+    @Test
+    public void calculateFareCarForARegisteredCar(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  10 * 60 * 60 * 1000) ); // 10 heures de stationnement par exemple
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurringUser(true);  // On déclare comme client récurrent donc devant bénéficier de la réduction de 5%
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals(((1 - DiscountRate.DISCOUNT_RATE) * 10 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice() );        
+    } 
+    
+    
+    @Test
+    public void calculateFareCarForANotRegisteredCar(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  10 * 60 * 60 * 1000) ); // 10 heures de stationnement par exemple
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurringUser(false);  // On déclare comme nouveau client donc ne bénéficiant pas de la réduction de 5%
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals((DiscountRate.NO_DISCOUNT * 10 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice() );        
+    }     
+    
+    
+    @Test
+    public void calculateFareBikeForARegistereBike(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  10 * 60 * 60 * 1000) ); // 10 heures de stationnement par exemple
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurringUser(true);  // On déclare comme client récurrent donc devant bénéficier de la réduction de 5%
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals(((1 - DiscountRate.DISCOUNT_RATE) * 10 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() );        
+    } 
+    
+    
+    @Test
+    public void calculateFareBikeForANotRegisteredBike(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  10 * 60 * 60 * 1000) ); // 10 heures de stationnement par exemple
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurringUser(false);  // On déclare comme nouveau client donc ne bénéficiant pas de la réduction de 5%
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals((DiscountRate.NO_DISCOUNT * 10 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() );        
+    }      
+    
 }
