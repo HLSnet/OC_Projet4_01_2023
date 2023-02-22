@@ -59,6 +59,7 @@ public class TicketDAO {
                 ticket.setInTime(rs.getTimestamp(4));
                 ticket.setOutTime(rs.getTimestamp(5));
             }
+            ticket.setRecurringUser(checkExistingTicket(vehicleRegNumber));
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
@@ -86,4 +87,31 @@ public class TicketDAO {
         }
         return false;
     }
+    
+    
+    public boolean checkExistingTicket(String vehicleRegNumber) {
+        Connection con = null;
+        Boolean response = false;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.CHECK_EXISTING_TICKET);
+            ps.setString(1,vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            
+          
+            if(rs.next()){
+            	
+            	response = (rs.getInt("nb_ticket_found") > 1) ? true: false;
+            }
+            
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);       
+        }catch (Exception ex){
+            logger.error("Error retrieving ticket info",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return response;
+    }  
+    
 }

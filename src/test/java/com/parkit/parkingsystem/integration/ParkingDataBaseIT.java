@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,4 +92,57 @@ public class ParkingDataBaseIT {
 		assertThat(priceInDb).isEqualTo(priceToBePaid);
     }
 
+    @Test
+    public void testParkingRecurrentClient(){
+
+    	//***************  1er passage ***********************************************
+        System.out.println( "1er passage");
+    	// Une voiture entre pour la 1ère fois dans le parking
+        testParkingACar();        
+        faireUnePause(1);
+        
+    	// La voiture sort du parking
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processExitingVehicle();
+        faireUnePause(1);
+        
+        //  On va lire dans la table ticket le statut de ce client (nouveau ou ancien)
+        Ticket ticket = ticketDAO.getTicket("ABCDEF");
+              
+	assertNotNull(ticket);		
+		
+	// On vérifie dans la table ticket qu'il est bien enregistré comme nouveau client 
+	assertFalse(ticket.getRecurringUser());
+		
+				
+    	//***************  2ème passage ***********************************************
+        System.out.println( "2ème passage");
+    	// La voiture entre pour la 2ème fois dans le parking  
+        testParkingACar();
+        faireUnePause(1);              
+        
+    	// La voiture sort du parking
+        //parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processExitingVehicle();        
+        faireUnePause(1);
+        
+        //  On va lire dans la table ticket le statut de ce client (nouveau ou ancien)
+        ticket = ticketDAO.getTicket("ABCDEF");
+
+	assertNotNull(ticket);
+		
+	// On vérifie dans la table ticket qu'il est enregistré dorénavant comme ancien client 
+	assertTrue(ticket.getRecurringUser());
+    }
+   
+    private void faireUnePause(int duree) {
+	    // Attendre 1 seconde
+	    try {
+			Thread.sleep(duree * 1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }    
+    
 }
