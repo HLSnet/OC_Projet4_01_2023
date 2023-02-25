@@ -22,11 +22,15 @@ public class Ticket {
     }
 
     public ParkingSpot getParkingSpot() {
+    	
+    	ParkingSpot parkingSpot =  new ParkingSpot( this.parkingSpot.getId(),  this.parkingSpot.getParkingType(),  this.parkingSpot.isAvailable());
+
         return parkingSpot;
     }
 
-    public void setParkingSpot(ParkingSpot parkingSpot) {
-        this.parkingSpot = parkingSpot;
+    public void setParkingSpot(ParkingSpot parkingSpot) {    	
+    	
+        this.parkingSpot =  new ParkingSpot( parkingSpot.getId(),parkingSpot.getParkingType(), parkingSpot.isAvailable());
     }
 
     public String getVehicleRegNumber() {
