@@ -2,6 +2,8 @@ package com.parkit.parkingsystem.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang.SerializationUtils;
+
 public class Ticket {
     private int id;
     private ParkingSpot parkingSpot;
@@ -44,19 +46,19 @@ public class Ticket {
     }
 
     public Date getInTime() {
-        return inTime;
+        return (Date) SerializationUtils.clone(inTime);
     }
 
     public void setInTime(Date inTime) {
-        this.inTime = inTime;
+        this.inTime = (Date) SerializationUtils.clone(inTime);
     }
 
     public Date getOutTime() {
-        return outTime;
+        return (Date) SerializationUtils.clone(outTime);
     }
 
     public void setOutTime(Date outTime) {
-        this.outTime = outTime;
+        this.outTime = (Date) SerializationUtils.clone(outTime);
     }
     
 	public Boolean getRecurringUser() {
